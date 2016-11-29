@@ -3,6 +3,8 @@
 COLOR='w'
 RANK='8'
 FENSHPRE="$(date +%s)-"
+FENTHEME=${FENTHEME:-chessposter}
+FENDIR=${FENDIR:-$(pwd)}
 
 switchcolor() {
 	if [ "$COLOR" = 'w' ]
@@ -14,19 +16,20 @@ switchcolor() {
 }
 
 puttile() {
-	tileput="${2}${COLOR}.png"
+	tileput="$FENDIR/$FENTHEME/${2}${COLOR}.png"
 	if [ "$RANK" = '1' ]
 	then
+		RANK1=$(basename "$tileput").1
 		convert "$tileput" -background White \
 		label:"$(echo $CHESSFILE | tr '123456789' 'abcdefghX')" \
-		-gravity Center -append "1-$tileput"
-		tileput="1-$tileput"
+		-gravity Center -append "$RANK1"
+		tileput="$RANK1"
 	fi
 	if [ -f "$1" ]
 	then
-		cp "$1" "bak$1"
-		convert "bak$1" "$tileput" +append "$1"
-		rm "bak$1"
+		cp "$1" "$1.bak"
+		convert "$1.bak" "$tileput" +append "$1"
+		rm "$1.bak"
 	else
 		convert  -background White -resize '10' label:"$RANK" \
 		-gravity West "$tileput" +append "$1"
@@ -74,4 +77,4 @@ do
 done
 rm result.bak.png
 rm ${FENSHPRE}rank*
-rm 1-*.png
+rm *.png.1
