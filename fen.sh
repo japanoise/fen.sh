@@ -5,6 +5,7 @@ RANK='8'
 FENSHPRE="$(date +%s)-"
 FENTHEME=${FENTHEME:-cburnett}
 FENDIR=${FENDIR:-$(pwd)}
+FONT=$(identify -list font | awk '$1 == "family:" && /Sans/ {sub(/^\s*family:\s/, ""); print; exit}')
 
 switchcolor() {
 	if [ "$COLOR" = 'w' ]
@@ -15,14 +16,18 @@ switchcolor() {
 	fi
 }
 
+chess_file_str() {
+	printf '%s\n' "${1:?}" | tr 1-8 a-h
+}
+
 puttile() {
 	tileput="$FENDIR/$FENTHEME/${2}${COLOR}.png"
 	if [ "$RANK" = '1' ]
 	then
 		RANK1=$(basename "$tileput").1
-		convert "$tileput" -background White \
-		label:"$(echo $CHESSFILE | tr '123456789' 'abcdefghX')" \
-		-gravity Center -append "$RANK1"
+		convert "$tileput" -background White -family "$FONT" -size \
+		16x16 -pointsize 14 -gravity Center \
+		label:"$(chess_file_str "$CHESSFILE")" -append "$RANK1"
 		tileput="$RANK1"
 	fi
 	if [ -f "$1" ]
@@ -31,8 +36,9 @@ puttile() {
 		convert "$1.bak" "$tileput" +append "$1"
 		rm "$1.bak"
 	else
-		convert  -background White -resize '10' label:"$RANK" \
-		-gravity West "$tileput" +append "$1"
+		convert  -background White -fill black -family "$FONT" \
+		-size 16x16 -pointsize 14 -gravity Center label:"$RANK" \
+		"$tileput" +append "$1"
 	fi
 	switchcolor
 	CHESSFILE=$((CHESSFILE + 1))
