@@ -3,7 +3,7 @@
 COLOR='w'
 RANK='8'
 FENSHPRE="$(date +%s)-"
-FENTHEME=${FENTHEME:-chessposter}
+FENTHEME=${FENTHEME:-cburnett}
 FENDIR=${FENDIR:-$(pwd)}
 
 switchcolor() {
